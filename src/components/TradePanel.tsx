@@ -78,18 +78,18 @@ export default function TradePanel({ coinId, coinSymbol, currentPrice, cashBalan
     };
 
     const actionText = isBuying ? 'Execute BUY' : 'Execute SELL';
-    const actionColor = isBuying ? 'bg-blue-600 hover:bg-blue-700' : 'bg-red-600 hover:bg-red-700';
+    const actionColor = isBuying ? 'bg-sky-600 hover:bg-sky-700' : 'bg-rose-600 hover:bg-rose-700';
 
     return (
-        <div className="bg-white p-6 rounded-xl shadow-2xl space-y-4">
-            <h2 className="text-xl font-bold text-gray-800 border-b pb-3">Trade {coinSymbol}</h2>
+        <div className="bg-slate-900 p-6 rounded-xl shadow-2xl space-y-4 border border-slate-800">
+            <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-3">Trade {coinSymbol}</h2>
 
             {/* Buy/Sell Selector */}
-            <div className="flex bg-gray-100 rounded-lg p-1">
+            <div className="flex bg-slate-800 rounded-lg p-1">
                 <button
                     onClick={() => setIsBuying(true)}
                     className={`flex-1 py-2 text-sm font-semibold rounded-lg transition ${
-                        isBuying ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-200'
+                        isBuying ? 'bg-sky-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-700'
                     }`}
                     disabled={isProcessing}
                 >
@@ -98,7 +98,7 @@ export default function TradePanel({ coinId, coinSymbol, currentPrice, cashBalan
                 <button
                     onClick={() => setIsBuying(false)}
                     className={`flex-1 py-2 text-sm font-semibold rounded-lg transition ${
-                        !isBuying ? 'bg-red-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-200'
+                        !isBuying ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-700'
                     }`}
                     disabled={isProcessing}
                 >
@@ -110,36 +110,36 @@ export default function TradePanel({ coinId, coinSymbol, currentPrice, cashBalan
             <div className="space-y-3">
                 
                 {/* Available Balance Display */}
-                <div className="text-sm font-medium text-gray-500">
+                <div className="text-sm font-medium text-slate-400">
                     Available Cash: 
-                    <span className="font-bold text-gray-900 ml-1">
+                    <span className="font-bold text-white ml-1">
                         {localFormatCurrency(cashBalance)}
                     </span>
                 </div>
 
                 {/* USD Input */}
-                <label className="block text-sm font-medium text-gray-700">Amount in USD to {isBuying ? 'Spend' : 'Receive'}:</label>
+                <label className="block text-sm font-medium text-slate-400">Amount in USD to {isBuying ? 'Spend' : 'Receive'}:</label>
                 <input
                     type="number"
                     step="0.01"
                     min="0"
                     value={usdAmount}
                     onChange={(e) => setUsdAmount(parseFloat(e.target.value) || '')}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full p-3 bg-slate-800 border border-slate-700 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition text-white"
                     placeholder="Enter USD amount"
                     disabled={isProcessing}
                 />
 
                 {/* Crypto Conversion Display */}
-                <div className="text-sm text-gray-600 p-2 bg-gray-50 rounded-lg border border-dashed">
+                <div className="text-sm text-slate-400 p-2 bg-slate-800 rounded-lg border border-dashed border-slate-700">
                     You will {isBuying ? 'acquire' : 'sell'}: 
-                    <span className="font-semibold text-gray-900 ml-1">
+                    <span className="font-semibold text-white ml-1">
                         {cryptoAmount.toFixed(6)} {coinSymbol}
                     </span>
                 </div>
 
                 {/* Current Price Reference */}
-                <div className="text-xs text-gray-500 pt-1">
+                <div className="text-xs text-slate-500 pt-1">
                     Executed at: {localFormatCurrency(currentPrice)}
                 </div>
 
@@ -147,7 +147,7 @@ export default function TradePanel({ coinId, coinSymbol, currentPrice, cashBalan
                 {message && (
                     <div
                         className={`p-3 text-sm rounded-lg shadow-sm ${
-                            message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                            message.type === 'success' ? 'bg-emerald-900 text-emerald-300' : 'bg-red-900 text-red-300'
                         }`}
                     >
                         {message.text}
@@ -160,7 +160,7 @@ export default function TradePanel({ coinId, coinSymbol, currentPrice, cashBalan
                     disabled={isProcessing || typeof usdAmount !== 'number' || usdAmount <= 0}
                     className={`w-full py-3 rounded-xl font-bold transition shadow-lg ${
                         isProcessing 
-                            ? 'bg-gray-400 cursor-not-allowed'
+                            ? 'bg-slate-600 cursor-not-allowed'
                             : `${actionColor} text-white`
                     }`}
                 >

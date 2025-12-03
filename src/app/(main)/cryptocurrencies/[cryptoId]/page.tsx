@@ -39,9 +39,9 @@ const formatLargeNumber = (value: number) => {
   return value.toLocaleString();
 };
 const getChangeColor = (change: number) => {
-  if (change > 0) return 'text-green-600';
-  if (change < 0) return 'text-red-600';
-  return 'text-gray-500';
+  if (change > 0) return 'text-green-400';
+  if (change < 0) return 'text-red-400';
+  return 'text-slate-500';
 };
 const durationOptions = ['1h', '6h', '1d', '1w', '1m', '1y'];
 
@@ -175,7 +175,7 @@ export default function CryptoInfoPage() {
   // --- Render Logic ---
   if (isLoading) {
     return (
-      <div className="p-6 text-center text-gray-500 text-lg font-medium">
+      <div className="p-6 text-center text-slate-400 text-lg font-medium">
         Loading details for {coinId.toUpperCase()}...
       </div>
     );
@@ -183,7 +183,7 @@ export default function CryptoInfoPage() {
 
   if (error || !details) {
     return (
-      <div className="p-6 bg-white rounded-xl shadow-lg text-red-600">Error: {error}</div>
+      <div className="p-6 bg-red-900 text-red-300 rounded-xl shadow-lg">Error: {error}</div>
     );
   }
 
@@ -193,14 +193,14 @@ export default function CryptoInfoPage() {
 
   return (
     <div className="space-y-8">
-      <Link href="/cryptocurrencies" className="text-blue-600 hover:text-blue-800 transition block">
+      <Link href="/cryptocurrencies" className="text-sky-500 hover:text-sky-400 transition block">
         &larr; Back to Market
       </Link>
 
       <header className="flex items-center space-x-4">
         <img src={details.logo_url} alt={`${details.name} logo`} className="w-12 h-12 rounded-full shadow-md" />
-        <h1 className="text-4xl font-extrabold text-gray-900">
-          {details.name} <span className="text-gray-500">({details.symbol})</span>
+        <h1 className="text-4xl font-extrabold text-white">
+          {details.name} <span className="text-slate-400">({details.symbol})</span>
         </h1>
       </header>
 
@@ -221,26 +221,26 @@ export default function CryptoInfoPage() {
     </div>
 
         {/* Total Portfolio Snapshot (3/4 width) */}
-        <div className="lg:col-span-3 bg-white p-6 rounded-xl shadow-lg space-y-4">
-            <h2 className="text-xl font-bold text-gray-800 border-b pb-3">Account Snapshot</h2>
+        <div className="lg:col-span-3 bg-slate-900 p-6 rounded-xl shadow-lg space-y-4 border border-slate-800">
+            <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-3">Account Snapshot</h2>
             {isPortfolioLoading ? (
-              <p className="text-gray-500">Loading wallet data...</p>
+              <p className="text-slate-400">Loading wallet data...</p>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Available Cash</p>
-                  <p className="font-bold text-xl text-blue-800">{formatCurrency(wallet?.cash_balance || 0)}</p>
+                <div className="p-3 bg-blue-900 rounded-lg">
+                  <p className="text-xs text-slate-400">Available Cash</p>
+                  <p className="font-bold text-xl text-blue-300">{formatCurrency(wallet?.cash_balance || 0)}</p>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Net Invested</p>
-                  <p className="font-bold text-xl">{formatCurrency(totalInvested)}</p>
+                <div className="p-3 bg-slate-800 rounded-lg">
+                  <p className="text-xs text-slate-400">Net Invested</p>
+                  <p className="font-bold text-xl text-white">{formatCurrency(totalInvested)}</p>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Total Market Value</p>
-                  <p className="font-bold text-xl">{formatCurrency(totalMarketValue)}</p>
+                <div className="p-3 bg-slate-800 rounded-lg">
+                  <p className="text-xs text-slate-400">Total Market Value</p>
+                  <p className="font-bold text-xl text-white">{formatCurrency(totalMarketValue)}</p>
                 </div>
-                <div className="p-3 rounded-lg" style={{ backgroundColor: netProfitLoss >= 0 ? '#d1fae5' : '#fee2e2' }}>
-                  <p className="text-xs text-gray-600">Overall P&L</p>
+                <div className="p-3 rounded-lg" style={{ backgroundColor: netProfitLoss >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
+                  <p className="text-xs text-slate-400">Overall P&L</p>
                   <p className={`font-bold text-xl ${getChangeColor(netProfitLoss)}`}>
                     {netProfitLoss >= 0 && '+'}{formatCurrency(netProfitLoss)} ({netPnlPercent.toFixed(2)}%)
                   </p>
@@ -248,27 +248,27 @@ export default function CryptoInfoPage() {
               </div>
             )}
 
-            <h3 className="text-lg font-semibold border-t pt-4">Your {details.name} Position</h3>
+            <h3 className="text-lg font-semibold border-t border-slate-800 pt-4 text-white">Your {details.name} Position</h3>
             {currentHolding ? (
-              <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-3 gap-4 p-4 bg-slate-800 rounded-lg">
                 <div>
-                  <p className="text-sm text-gray-600">Held Quantity</p>
-                  <p className="font-bold text-lg">{currentHolding.quantity.toFixed(6)} {currentHolding.coin_symbol}</p>
+                  <p className="text-sm text-slate-400">Held Quantity</p>
+                  <p className="font-bold text-lg text-white">{currentHolding.quantity.toFixed(6)} {currentHolding.coin_symbol}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Avg. Cost / Coin</p>
+                  <p className="text-sm text-slate-400">Avg. Cost / Coin</p>
                   {/* Safely calculate average cost, preventing division by zero */}
-                  <p className="font-bold text-lg">{formatCurrency(currentHolding.cost_basis / (currentHolding.quantity > 0 ? currentHolding.quantity : 1))}</p>
+                  <p className="font-bold text-lg text-white">{formatCurrency(currentHolding.cost_basis / (currentHolding.quantity > 0 ? currentHolding.quantity : 1))}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Unrealized P&L</p>
+                  <p className="text-sm text-slate-400">Unrealized P&L</p>
                   <p className={`font-bold text-lg ${getChangeColor(currentHolding.pnl_usd || 0)}`}>
                     {currentHolding.pnl_usd! >= 0 && '+'}{formatCurrency(currentHolding.pnl_usd || 0)} ({currentHolding.pnl_percent?.toFixed(2) || 0}%)
                   </p>
                 </div>
               </div>
             ) : (
-              <p className="text-gray-500 p-4 bg-gray-50 rounded-lg">You do not currently hold any {details.name}.</p>
+              <p className="text-slate-400 p-4 bg-slate-800 rounded-lg">You do not currently hold any {details.name}.</p>
             )}
         </div>
       </div>
@@ -277,31 +277,31 @@ export default function CryptoInfoPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Market Overview (Left Column - 33% - Full Height) */}
-        <div className="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg space-y-4">
-          <h2 className="text-xl font-bold text-gray-800 border-b pb-3">Market Overview</h2>
+        <div className="lg:col-span-1 bg-slate-900 p-6 rounded-xl shadow-lg space-y-4 border border-slate-800">
+          <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-3">Market Overview</h2>
           
-          <div className="space-y-4 text-gray-700">
+          <div className="space-y-4 text-slate-400">
             <p className="flex justify-between items-center">
-              <span className="font-medium text-gray-600">Current Price</span>
-              <span className="font-bold text-2xl">{formatCurrency(details.current_price)}</span>
+              <span className="font-medium text-slate-400">Current Price</span>
+              <span className="font-bold text-2xl text-white">{formatCurrency(details.current_price)}</span>
             </p>
             <p className="flex justify-between items-center">
-              <span className="font-medium text-gray-600">24h Change</span>
+              <span className="font-medium text-slate-400">24h Change</span>
               <span className={`font-semibold text-lg ${getChangeColor(details.price_change_percentage_24h)}`}>
                 {details.price_change_percentage_24h.toFixed(2)}%
               </span>
             </p>
             <p className="flex justify-between items-center">
-              <span className="font-medium text-gray-600">Market Cap</span>
-              <span className="font-semibold text-gray-900 text-lg">{formatCurrency(details.market_cap)}</span>
+              <span className="font-medium text-slate-400">Market Cap</span>
+              <span className="font-semibold text-white text-lg">{formatCurrency(details.market_cap)}</span>
             </p>
             <p className="flex justify-between items-center">
-              <span className="font-medium text-gray-600">Circulating Supply</span>
-              <span className="font-semibold text-gray-900 text-lg">{formatLargeNumber(details.circulating_supply)} {details.symbol}</span>
+              <span className="font-medium text-slate-400">Circulating Supply</span>
+              <span className="font-semibold text-white text-lg">{formatLargeNumber(details.circulating_supply)} {details.symbol}</span>
             </p>
             <p className="flex justify-between items-center">
-              <span className="font-medium text-gray-600">Max Supply</span>
-              <span className="font-semibold text-gray-900 text-lg">
+              <span className="font-medium text-slate-400">Max Supply</span>
+              <span className="font-semibold text-white text-lg">
                 {details.max_supply ? formatLargeNumber(details.max_supply) + ` ${details.symbol}` : 'N/A'}
               </span>
             </p>
@@ -309,8 +309,8 @@ export default function CryptoInfoPage() {
         </div>
 
         {/* --- Price Chart (Right Column - 66%) --- */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Price Chart</h2>
+        <div className="lg:col-span-2 bg-slate-900 p-6 rounded-xl shadow-lg border border-slate-800">
+          <h2 className="text-xl font-bold text-white mb-4">Price Chart</h2>
           <div className="flex space-x-2 mb-4">
             {/* Chart Duration Selector */}
             {durationOptions.map(duration => (
@@ -318,8 +318,8 @@ export default function CryptoInfoPage() {
                 key={duration}
                 className={`px-3 py-1 text-sm rounded-lg transition ${
                   selectedDuration === duration 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-sky-600 text-white' 
+                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
                 }`}
                 onClick={() => setSelectedDuration(duration)}
               >
@@ -331,16 +331,16 @@ export default function CryptoInfoPage() {
           {/* --- CHART RENDER --- */}
           <div className="h-64 w-full">
             {isChartLoading ? (
-              <div className="flex items-center justify-center h-full text-gray-500">Loading chart...</div>
+              <div className="flex items-center justify-center h-full text-slate-400">Loading chart...</div>
             ) : !chartData || chartData.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-gray-500">No chart data available.</div>
+              <div className="flex items-center justify-center h-full text-slate-400">No chart data available.</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart 
                   data={chartData}
                   margin={{ top: 5, right: 20, left: -20, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                   <XAxis 
                     dataKey="timestamp" 
                     tickFormatter={(time) => {
@@ -350,25 +350,25 @@ export default function CryptoInfoPage() {
                       }
                       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     }}
-                    stroke="#6b7280"
+                    stroke="#64748b"
                     fontSize={12}
                   />
                   <YAxis 
                     dataKey="price" 
                     domain={['auto', 'auto']}
-                    stroke="#6b7280"
+                    stroke="#64748b"
                     fontSize={12}
                     tickFormatter={(price) => formatCurrency(price)}
                   />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '8px' }}
+                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', color: '#cbd5e1' }}
                     labelFormatter={(time) => new Date(time).toLocaleString()}
                     formatter={(value: number) => [formatCurrency(value), 'Price']}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="price" 
-                    stroke="#3b82f6"
+                    stroke="#0ea5e9"
                     strokeWidth={2}
                     dot={false}
                   />
@@ -380,9 +380,9 @@ export default function CryptoInfoPage() {
       </div>
 
       {/* --- About Section --- */}
-      <div className="bg-white p-6 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">About {details.name}</h2>
-        <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+      <div className="bg-slate-900 p-6 rounded-xl shadow-lg border border-slate-800">
+        <h2 className="text-2xl font-bold text-white mb-4">About {details.name}</h2>
+        <p className="text-slate-400 leading-relaxed whitespace-pre-line">
           {details.about_text || "No detailed description is available for this asset at the moment."}
         </p>
       </div>

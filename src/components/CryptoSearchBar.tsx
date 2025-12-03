@@ -65,33 +65,33 @@ export default function CryptoSearchBar() {
         onChange={handleSearchChange}
         onFocus={() => results.length > 0 && setIsDropdownVisible(true)}
         placeholder="Search for a cryptocurrency..."
-        className="w-full px-4 py-2 text-gray-900 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
+        className="w-full px-4 py-2 text-white bg-slate-800 border border-slate-700 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition-shadow"
       />
       {isDropdownVisible && (
-        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-80 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-2 bg-slate-800 border border-slate-700 rounded-lg shadow-lg max-h-80 overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-gray-500">Loading...</div>
+            <div className="p-4 text-center text-slate-400">Loading...</div>
           ) : results.length > 0 ? (
             <ul>
               {results.map((crypto) => (
                 <li key={crypto.id}>
                   <Link
                     href={`/cryptocurrencies/${crypto.id}`}
-                    className="flex items-center px-4 py-3 hover:bg-gray-100 transition-colors"
+                    className="flex items-center px-4 py-3 hover:bg-slate-700 transition-colors"
                     onClick={() => {
                       setSearchTerm('');
                       setIsDropdownVisible(false);
                     }}
                   >
                     <img src={crypto.logo_url} alt={crypto.name} className="w-6 h-6 mr-3 rounded-full" />
-                    <span className="font-medium text-gray-800">{crypto.name}</span>
-                    <span className="ml-2 text-sm text-gray-500">{crypto.symbol.toUpperCase()}</span>
+                    <span className="font-medium text-white">{crypto.name}</span>
+                    <span className="ml-2 text-sm text-slate-400">{crypto.symbol.toUpperCase()}</span>
                   </Link>
                 </li>
               ))}
             </ul>
           ) : (
-            <div className="p-4 text-center text-gray-500">No results found.</div>
+            <div className="p-4 text-center text-slate-400">No results found.</div>
           )}
         </div>
       )}

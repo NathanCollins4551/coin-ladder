@@ -8,14 +8,14 @@ export default async function MyTradesPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-6">My Trades</h1>
+      <h1 className="text-4xl font-bold mb-6 text-white">My Trades</h1>
 
       {trades.length === 0 ? (
-        <p className="text-gray-500">No trades found yet.</p>
+        <p className="text-slate-400">No trades found yet.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-            <thead className="bg-gray-800 text-white">
+          <table className="min-w-full bg-slate-800 shadow-md rounded-lg overflow-hidden border border-slate-700">
+            <thead className="bg-slate-700 text-white">
               <tr>
                 <th className="py-3 px-4 text-left">Type</th>
                 <th className="py-3 px-4 text-left">Coin</th>
@@ -25,10 +25,10 @@ export default async function MyTradesPage() {
                 {/* <th className="py-3 px-4 text-left">Date</th> */}
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody className="text-slate-300">
               {trades.map((trade: Trade, index: number) => (
-                <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
-                  <td className={`py-3 px-4 ${trade.type === 'BUY' ? 'text-green-600' : 'text-red-600'}`}>
+                <tr key={index} className="border-b border-slate-700 hover:bg-slate-700">
+                  <td className={`py-3 px-4 ${trade.type === 'BUY' ? 'text-green-400' : 'text-red-400'}`}>
                     {trade.type}
                   </td>
                   <td className="py-3 px-4">{trade.coin_symbol.toUpperCase()}</td>

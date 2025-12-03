@@ -104,15 +104,15 @@ export default async function LeaderboardPage() {
     const isUserInTop10 = user && leaderboardData.some(entry => entry.user_id === user.id);
 
     return (
-        <div className="bg-gray-50 min-h-screen">
+        <div className="min-h-screen">
             <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
-                    <h1 className="text-5xl font-extrabold text-gray-900 tracking-tight">Leaderboard</h1>
-                    <p className="mt-4 text-lg text-gray-600">See who's on top of the cash balance rankings.</p>
+                    <h1 className="text-5xl font-extrabold text-white tracking-tight">Leaderboard</h1>
+                    <p className="mt-4 text-lg text-slate-400">See who's on top of the cash balance rankings.</p>
                 </div>
 
                 {userRank && (
-                    <div className="relative bg-gradient-to-r from-blue-500 to-indigo-600 p-6 mb-8 shadow-2xl rounded-2xl text-white">
+                    <div className="relative bg-gradient-to-r from-sky-500 to-indigo-600 p-6 mb-8 shadow-2xl rounded-2xl text-white">
                         <div className="flex justify-between items-center">
                             <div>
                                 <p className="text-sm uppercase tracking-wider font-semibold">Your Rank</p>
@@ -127,9 +127,9 @@ export default async function LeaderboardPage() {
                     </div>
                 )}
 
-                <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
+                <div className="bg-slate-800 shadow-xl rounded-2xl overflow-hidden border border-slate-700">
                     {/* Table Header */}
-                    <div className="grid grid-cols-12 text-xs font-bold uppercase text-gray-500 tracking-wider px-6 py-4 border-b bg-gray-50/50">
+                    <div className="grid grid-cols-12 text-xs font-bold uppercase text-slate-400 tracking-wider px-6 py-4 border-b border-slate-700 bg-slate-700">
                         <div className="col-span-1">#</div>
                         <div className="col-span-6">User</div>
                         <div className="col-span-5 text-right">Balance</div>
@@ -137,22 +137,22 @@ export default async function LeaderboardPage() {
 
                     {/* Leaderboard Rows */}
                     {hasData ? (
-                        <div className="divide-y divide-gray-100">
+                        <div className="divide-y divide-slate-700">
                             {leaderboardData.map((entry, index) => {
                                 const isCurrentUser = user && entry.user_id === user.id;
                                 const isTopThree = index < 3;
                                 const isFirst = index === 0;
 
                                 // Determine style based on rank
-                                let rankStyle = 'text-gray-500';
+                                let rankStyle = 'text-slate-400';
                                 let crown = null;
                                 if (isFirst) {
-                                    rankStyle = 'text-amber-500';
+                                    rankStyle = 'text-amber-400';
                                     crown = '👑';
                                 } else if (index === 1) {
-                                    rankStyle = 'text-slate-500';
+                                    rankStyle = 'text-slate-300';
                                 } else if (index === 2) {
-                                    rankStyle = 'text-orange-700';
+                                    rankStyle = 'text-orange-500';
                                 }
 
                                 return (
@@ -160,8 +160,8 @@ export default async function LeaderboardPage() {
                                         key={entry.rank}
                                         className={`grid grid-cols-12 items-center px-6 py-4 transition-all duration-300 ${
                                             isCurrentUser 
-                                                ? 'bg-blue-50 border-l-4 border-blue-500 z-10 shadow-lg' 
-                                                : 'hover:bg-gray-50'
+                                                ? 'bg-slate-700 border-l-4 border-sky-500 z-10 shadow-lg' 
+                                                : 'hover:bg-slate-700'
                                         }`}
                                     >
                                         {/* Rank Column */}
@@ -170,12 +170,12 @@ export default async function LeaderboardPage() {
                                         </div>
 
                                         {/* Display Name */}
-                                        <div className="col-span-6 text-base font-semibold text-gray-800">
+                                        <div className="col-span-6 text-base font-semibold text-white">
                                             {entry.username}
                                         </div>
 
                                         {/* Cash Balance */}
-                                        <div className="col-span-5 text-right text-xl font-semibold text-emerald-600">
+                                        <div className="col-span-5 text-right text-xl font-semibold text-emerald-400">
                                             {formatCurrency(entry.balance)}
                                         </div>
                                     </div>
@@ -183,7 +183,7 @@ export default async function LeaderboardPage() {
                             })}
                         </div>
                     ) : (
-                        <div className="p-10 text-center text-gray-500">
+                        <div className="p-10 text-center text-slate-400">
                             <p>No user data available to display the leaderboard.</p>
                             <p className="mt-2 text-sm">Ensure new users are created and have a cash balance entry.</p>
                         </div>

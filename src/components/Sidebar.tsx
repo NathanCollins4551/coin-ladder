@@ -14,10 +14,10 @@ export const Sidebar = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="flex flex-col w-64 bg-gray-800 text-white h-full fixed top-0 left-0">
+    <div className="flex flex-col w-64 bg-slate-900 text-white h-full fixed top-0 left-0">
       {/* Logo Section */}
-      <Link href="/" className="p-4 flex items-center text-2xl font-bold border-b border-gray-700 hover:text-green-400 transition">
-        <svg className="h-8 w-8 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <Link href="/" className="p-4 flex items-center text-2xl font-bold border-b border-slate-800 hover:text-sky-400 transition">
+        <svg className="h-8 w-8 text-sky-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v16M20 4v16M4 10h16M4 16h16"/>
         </svg>
         Coin Ladder
@@ -29,7 +29,7 @@ export const Sidebar = () => {
           <Link
             key={item.name}
             href={item.href}
-            className="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition duration-150"
+            className="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition duration-150"
           >
             {item.name}
           </Link>
@@ -37,7 +37,7 @@ export const Sidebar = () => {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 text-xs text-center border-t border-gray-700 text-gray-400">
+      <div className="p-4 text-xs text-center border-t border-slate-800 text-slate-500">
         <p>Coin Ladder</p>
         <p>&copy; {currentYear}</p>
       </div>

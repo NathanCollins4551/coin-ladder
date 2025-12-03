@@ -23,7 +23,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
     // which confirms the session is valid for ProfileBarServer to fetch data.
     
     return (
-        <div className="flex min-h-screen bg-gray-100">
+        <div className="flex min-h-screen">
             <Sidebar />
             <div className="flex flex-col flex-grow pl-64">
                 {/* 🔑 FIX 2: Render the Server Component wrapper */}

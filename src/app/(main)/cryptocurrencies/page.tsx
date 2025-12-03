@@ -17,10 +17,10 @@ const formatChange = (change: number | undefined) => {
   return (change != null && !isNaN(change)) ? `${change.toFixed(2)}%` : 'N/A';
 };
 const getChangeColor = (change: number | undefined) => {
-  if (change == null || isNaN(change)) return 'text-gray-500';
-  if (change > 0) return 'text-green-600';
-  if (change < 0) return 'text-red-600';
-  return 'text-gray-500';
+  if (change == null || isNaN(change)) return 'text-slate-500';
+  if (change > 0) return 'text-green-400';
+  if (change < 0) return 'text-red-400';
+  return 'text-slate-500';
 };
 
 // --- Main Client Component ---
@@ -57,24 +57,24 @@ export default function CryptocurrenciesPage() {
 
   const renderContent = () => {
     if (isLoading) {
-      return <div className="p-8 text-center text-gray-500">Loading cryptocurrencies...</div>;
+      return <div className="p-8 text-center text-slate-400">Loading cryptocurrencies...</div>;
     }
 
     if (error) {
-      return <div className="p-8 text-center text-red-500">Error: {error}</div>;
+      return <div className="p-8 text-center text-red-400">Error: {error}</div>;
     }
 
     const visibleCryptos = allCryptos.slice(0, visibleCount);
 
     if (visibleCryptos.length === 0) {
-      return <div className="p-8 text-center text-gray-500">No data available.</div>;
+      return <div className="p-8 text-center text-slate-400">No data available.</div>;
     }
 
     return (
       <>
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-slate-800 rounded-xl shadow-lg overflow-hidden border border-slate-700">
           {/* Table Header */}
-          <div className="grid grid-cols-12 text-sm font-semibold text-gray-600 uppercase border-b p-4 bg-gray-50">
+          <div className="grid grid-cols-12 text-sm font-semibold text-slate-400 uppercase border-b border-slate-700 p-4 bg-slate-700">
             <div className="col-span-5 md:col-span-4">Name</div>
             <div className="col-span-3 md:col-span-3 text-right">Price</div>
             <div className="col-span-2 md:col-span-2 text-right">24h %</div>
@@ -87,7 +87,7 @@ export default function CryptocurrenciesPage() {
             <Link 
               key={crypto.id}
               href={`/cryptocurrencies/${crypto.id}`}
-              className="grid grid-cols-12 items-center border-b hover:bg-gray-50 transition duration-100 p-4"
+              className="grid grid-cols-12 items-center border-b border-slate-700 hover:bg-slate-700 transition duration-100 p-4"
             >
               <div className="col-span-5 md:col-span-4 flex items-center space-x-3">
                 <img 
@@ -96,12 +96,12 @@ export default function CryptocurrenciesPage() {
                     className="w-8 h-8 rounded-full" 
                 /> 
                 <div>
-                  <span className="font-medium text-gray-900">{crypto.name}</span>
-                  <span className="text-xs text-gray-500 block md:hidden">{crypto.symbol}</span>
+                  <span className="font-medium text-white">{crypto.name}</span>
+                  <span className="text-xs text-slate-400 block md:hidden">{crypto.symbol}</span>
                 </div>
-                <span className="hidden md:inline text-sm text-gray-500">{crypto.symbol}</span>
+                <span className="hidden md:inline text-sm text-slate-400">{crypto.symbol}</span>
               </div>
-              <div className="col-span-3 md:col-span-3 text-right font-bold text-gray-800">
+              <div className="col-span-3 md:col-span-3 text-right font-bold text-white">
                 {formatPrice(crypto.price)}
               </div>
               <div className={`col-span-2 md:col-span-2 text-right font-semibold ${getChangeColor(crypto.percent_change_24h)}`}>
@@ -110,7 +110,7 @@ export default function CryptocurrenciesPage() {
               <div className={`col-span-2 md:col-span-2 text-right font-semibold ${getChangeColor(crypto.percent_change_7d)}`}>
                 {formatChange(crypto.percent_change_7d)}
               </div>
-              <div className="col-span-1 text-right text-gray-400">
+              <div className="col-span-1 text-right text-slate-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
               </div>
             </Link>
@@ -121,7 +121,7 @@ export default function CryptocurrenciesPage() {
           <div className="flex justify-center mt-8">
             <button
               onClick={handleLoadMore}
-              className="px-6 py-3 rounded-xl text-white font-semibold transition bg-blue-600 hover:bg-blue-700 shadow-lg"
+              className="px-6 py-3 rounded-xl text-white font-semibold transition bg-sky-600 hover:bg-sky-700 shadow-lg"
             >
               Load More
             </button>
@@ -134,7 +134,7 @@ export default function CryptocurrenciesPage() {
   return (
     <div className="p-4 md:p-6 space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <h1 className="text-3xl font-bold text-gray-800">
+        <h1 className="text-3xl font-bold text-white">
           Cryptocurrencies
         </h1>
         <CryptoSearchBar />

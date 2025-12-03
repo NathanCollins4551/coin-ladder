@@ -58,7 +58,7 @@ export default function SignUpPage() {
 
     if (displayName.length < 3) {
       return (
-        <p className="text-xs text-yellow-600 mt-1">
+        <p className="text-xs text-yellow-400 mt-1">
           Must be at least 3 characters.
         </p>
       );
@@ -66,7 +66,7 @@ export default function SignUpPage() {
 
     if (isChecking) {
       return (
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-slate-400 mt-1">
           Checking availability...
         </p>
       );
@@ -74,7 +74,7 @@ export default function SignUpPage() {
 
     if (isAvailable === true) {
       return (
-        <p className="text-xs text-green-600 mt-1 flex items-center">
+        <p className="text-xs text-green-400 mt-1 flex items-center">
           ✅ Available!
         </p>
       );
@@ -82,7 +82,7 @@ export default function SignUpPage() {
     
     if (isAvailable === false) {
       return (
-        <p className="text-xs text-red-600 mt-1 flex items-center">
+        <p className="text-xs text-red-400 mt-1 flex items-center">
           ❌ Already taken.
         </p>
       );
@@ -93,22 +93,22 @@ export default function SignUpPage() {
 
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-2xl border border-gray-200">
-        <h2 className="text-3xl font-bold text-center text-gray-900">
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-full max-w-md p-8 space-y-6 bg-slate-900 rounded-xl shadow-2xl border border-slate-800">
+        <h2 className="text-3xl font-bold text-center text-white">
           Create a Coin Ladder Account
         </h2>
         
         {/* Display Error Message */}
         {error && (
-          <div className="p-3 text-sm text-red-700 bg-red-100 rounded-lg border border-red-300">
+          <div className="p-3 text-sm text-red-300 bg-red-900 rounded-lg border border-red-700">
             Sign up failed: {decodeURIComponent(error)}
           </div>
         )}
 
         {/* Display Success Message */}
         {message && (
-          <div className="p-3 text-sm text-green-700 bg-green-100 rounded-lg border border-green-300">
+          <div className="p-3 text-sm text-green-300 bg-green-900 rounded-lg border border-green-700">
             {decodeURIComponent(message)}
           </div>
         )}
@@ -118,7 +118,7 @@ export default function SignUpPage() {
 
           {/* Display Name Input (NEW) */}
           <div>
-            <label htmlFor="display_name" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="display_name" className="block text-sm font-medium text-slate-300">
               Unique Display Name
             </label>
             <input
@@ -130,14 +130,14 @@ export default function SignUpPage() {
               placeholder="e.g., TraderJoe123"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm text-white"
             />
             {renderAvailabilityStatus()}
           </div>
           
           {/* Email Input */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-slate-300">
               Email address
             </label>
             <input
@@ -146,13 +146,13 @@ export default function SignUpPage() {
               type="email"
               required
               placeholder="you@example.com"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm text-white"
             />
           </div>
 
           {/* Password Input */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-slate-300">
               Password
             </label>
             <input
@@ -161,7 +161,7 @@ export default function SignUpPage() {
               type="password"
               required
               placeholder="••••••••"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm text-white"
             />
           </div>
           
@@ -172,8 +172,8 @@ export default function SignUpPage() {
               disabled={isChecking || isAvailable === false || displayName.length < 3}
               className={`w-full py-2 px-4 rounded-lg font-medium transition ${
                 isChecking || isAvailable === false || displayName.length < 3 
-                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                  ? 'bg-slate-600 text-slate-400 cursor-not-allowed' 
+                  : 'bg-sky-600 text-white hover:bg-sky-700'
               }`}
             >
               Sign Up
@@ -183,9 +183,9 @@ export default function SignUpPage() {
         
         {/* Log In Link */}
         <div className="text-center text-sm">
-          <p className="text-gray-600">
+          <p className="text-slate-400">
             Already have an account?{' '}
-            <Link href="/account/login" className="font-medium text-green-600 hover:text-green-500">
+            <Link href="/account/login" className="font-medium text-sky-500 hover:text-sky-400">
               Log In
             </Link>
           </p>

@@ -85,15 +85,15 @@ export default function MyNewsPage() {
         if (isLoading) {
             return (
                 <div className="text-center p-8">
-                    <p className="text-gray-500 text-lg">Loading the latest crypto headlines...</p>
+                    <p className="text-slate-400 text-lg">Loading the latest crypto headlines...</p>
                 </div>
             );
         }
 
         if (error) {
             return (
-                <div className="p-6 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-                    <h2 className="font-bold text-xl mb-2">Error Loading News</h2>
+                <div className="p-6 bg-red-900 border border-red-700 text-red-300 rounded-lg">
+                    <h2 className="font-bold text-lg mb-2">Error Loading News</h2>
                     <p>Could not retrieve news articles. Check your backend proxy and CoinGecko connection.</p>
                     <p className="text-sm mt-2">Details: {error}</p>
                 </div>
@@ -102,7 +102,7 @@ export default function MyNewsPage() {
 
         if (news.length === 0 && !hasMore) {
             return (
-                <div className="p-6 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded-lg">
+                <div className="p-6 bg-yellow-900 border border-yellow-700 text-yellow-300 rounded-lg">
                     <p>No news articles available at this time.</p>
                 </div>
             );
@@ -117,9 +117,9 @@ export default function MyNewsPage() {
                             target="_blank"
                             rel="noopener noreferrer"
                             key={index}
-                            className="block bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100"
+                            className="block bg-slate-800 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-slate-700"
                         >
-                            <div className="relative h-48 bg-gray-100">
+                            <div className="relative h-48 bg-slate-700">
                                 {/* Image/Placeholder Logic */}
                                 {article.image && article.image.includes('http') ? (
                                     <img 
@@ -134,7 +134,7 @@ export default function MyNewsPage() {
                                         }}
                                     />
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center w-full h-full text-blue-600 font-bold text-lg bg-blue-50 p-4 text-center">
+                                    <div className="flex flex-col items-center justify-center w-full h-full text-sky-400 font-bold text-lg bg-sky-900 p-4 text-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 mb-2">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" />
                                         </svg>
@@ -143,10 +143,10 @@ export default function MyNewsPage() {
                                 )}
                             </div>
                             <div className="p-4 space-y-2">
-                                <h3 className="font-bold text-lg text-gray-900 leading-snug hover:text-blue-600 transition-colors">
+                                <h3 className="font-bold text-lg text-white leading-snug hover:text-sky-400 transition-colors">
                                     {article.title}
                                 </h3>
-                                <div className="flex justify-between text-sm text-gray-500">
+                                <div className="flex justify-between text-sm text-slate-400">
                                     <span className="truncate">Source: {article.source}</span>
                                     <span>{formatTimestamp(article.date)}</span>
                                 </div>
@@ -163,8 +163,8 @@ export default function MyNewsPage() {
                             disabled={isLoadMoreLoading}
                             className={`px-6 py-3 rounded-xl text-white font-semibold transition ${
                                 isLoadMoreLoading 
-                                    ? 'bg-blue-400 cursor-not-allowed' 
-                                    : 'bg-blue-600 hover:bg-blue-700 shadow-lg'
+                                    ? 'bg-sky-700 cursor-not-allowed' 
+                                    : 'bg-sky-600 hover:bg-sky-700 shadow-lg'
                             }`}
                         >
                             {isLoadMoreLoading ? 'Loading...' : `Load More Articles`}
@@ -173,15 +173,15 @@ export default function MyNewsPage() {
                 )}
                 
                 {!hasMore && news.length > 0 && (
-                    <p className="text-center text-gray-500 mt-8">End of news feed.</p>
+                    <p className="text-center text-slate-400 mt-8">End of news feed.</p>
                 )}
             </>
         );
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-8">
-            <h1 className="text-5xl font-extrabold text-gray-900 border-b pb-4">
+        <div className="p-6 max-w-7xl mx-auto space-y-8 bg-slate-900 border border-slate-800 rounded-xl shadow-lg">
+            <h1 className="text-5xl font-extrabold text-white border-b border-slate-800 pb-4">
                 Global Crypto News
             </h1>
             
