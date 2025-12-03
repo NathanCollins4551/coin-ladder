@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/Sidebar'
 // 🔑 FIX 1: Import the Server Component wrapper
 import { ProfileBarServer } from '@/components/ProfileBarServer' 
+import AuthHandler from '@/components/AuthHandler'
+import { Suspense } from 'react'
 
 
 const LANDING_PAGE = '/landing' 
@@ -24,10 +26,13 @@ export default async function MainLayout({ children }: { children: React.ReactNo
     
     return (
         <div className="flex min-h-screen">
+            <AuthHandler />
             <Sidebar />
             <div className="flex flex-col flex-grow pl-64">
                 {/* 🔑 FIX 2: Render the Server Component wrapper */}
-                <ProfileBarServer /> 
+                <Suspense fallback={<div>Loading...</div>}>
+                    <ProfileBarServer /> 
+                </Suspense>
                 <main className="flex-grow p-6">
                     {children}
                 </main>

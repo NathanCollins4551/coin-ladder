@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { ProfileBar } from './ProfileBar';
+import type { JSX } from 'react';
 
 // 1. Fetch the user's balance from the user_profiles table
 async function fetchUserBalance(userId: string): Promise<number> {
@@ -27,7 +28,7 @@ async function fetchUserBalance(userId: string): Promise<number> {
     return Number(data?.cash_balance) || 0; 
 }
 
-export const ProfileBarServer = async () => {
+export const ProfileBarServer = async (): Promise<JSX.Element | null> => {
     // 1. Get the authenticated session
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();

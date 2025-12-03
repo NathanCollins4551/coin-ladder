@@ -61,7 +61,10 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    redirect(LOGIN_PAGE + '?error=' + encodeURIComponent(error.message))
+    if (error.message === 'Email not confirmed') {
+      return redirect(LOGIN_PAGE + '?error=' + encodeURIComponent('Email not confirmed. Please check your inbox for the confirmation link.'));
+    }
+    return redirect(LOGIN_PAGE + '?error=' + encodeURIComponent(error.message));
   }
 
   revalidatePath(HOMEPAGE, 'layout')
@@ -76,86 +79,77 @@ export async function login(formData: FormData) {
  * 3. Cleans up Auth user if the profile insert fails.
  * 4. Updates Auth metadata for session access.
  */
-export async function signup(formData: FormData) {
-  const supabase = await createClient() 
-  const supabaseAdmin = createAdminClient(); 
+export async function signup(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  const supabase = createClient() 
 
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const displayName = formData.get('display_name') as string;
 
-  // 1. Prepare the two name formats
-  const normalizedDisplayName = displayName.toLowerCase(); // For uniqueness check (stored in display_name)
-  const preferredDisplayName = displayName; // For display on site (stored in preferred_name and metadata)
-
-  // 2. Attempt to sign up the user
-  const { data: userData, error: signUpError } = await supabase.auth.signUp({ 
-    email, 
-    password 
-  })
-
-  if (signUpError) {
-    const errorMessage = signUpError.message.includes('Database error') 
-        ? `${signUpError.message}. Code: ${signUpError.status}. Please check for an old database trigger (handle_new_user) that is failing to insert the required 'display_name'.` 
-        : signUpError.message;
-
-    return redirect(LOGIN_PAGE + '?error=' + encodeURIComponent(errorMessage));
-  }
-  
-  if (!userData.user) {
-    return redirect(SIGNUP_PAGE + '?error=' + encodeURIComponent('User creation failed unexpectedly. Please try again.'));
-  }
-
-  // 3. Insert both names into the user_profiles table
-  const { error: profileError } = await supabase
-    .from('user_profiles')
-    .insert({ 
-      user_id: userData.user.id, 
-      display_name: normalizedDisplayName, // Lowercase for unique constraint
-      preferred_name: preferredDisplayName, // Original case for display
-    });
-
-  if (profileError) {
-      console.error('Supabase Profile Insert Error:', profileError);
-      
-      // CRITICAL CLEANUP: Delete the orphaned user created in step 2
-      const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userData.user.id);
-      
-      if (deleteError) {
-          console.error('CRITICAL: Failed to clean up user after profile error:', deleteError);
-      }
-      
-      // Handle unique constraint error (23505)
-      if (profileError.code === '23505') {
-            return redirect(SIGNUP_PAGE + '?error=' + encodeURIComponent('Display name is already taken. Please try another one.'));
-      }
-      
-      const genericErrorMessage = `Profile creation failed: ${profileError.message} (Code: ${profileError.code}). Account not created.`;
-      return redirect(SIGNUP_PAGE + '?error=' + encodeURIComponent(genericErrorMessage));
-  }
-
-  // 4. Update Auth Metadata: Store preferred name in the user's session data
-  const { error: metadataError } = await supabase.auth.updateUser({
-      data: { 
-          // Use a custom key that mirrors the preferred name
-          preferred_display_name: preferredDisplayName,
-      }
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
   });
 
-  if (metadataError) {
-      console.error("Warning: Failed to update user metadata:", metadataError);
+  if (error) {
+    return { success: false, error: error.message };
   }
 
-  // 5. IMMEDIATE SIGN-IN: Establish the session cookie.
-  const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+  return { success: true };
+}
 
-  if (signInError) {
-    return redirect(LOGIN_PAGE + '?error=' + encodeURIComponent('Account created, but sign-in failed. Please try logging in.'));
+// --- OTP Verification ---
+export async function verifyOtp(formData: FormData) {
+  const supabase = await createClient();
+  const supabaseAdmin = createAdminClient();
+
+  const email = formData.get('email') as string;
+  const token = formData.get('token') as string;
+  const displayName = formData.get('displayName') as string;
+
+  if (!email || !token || !displayName) {
+    return redirect(`${SIGNUP_PAGE}?step=2&email=${encodeURIComponent(email)}&error=Email, token, and display name are required.`);
   }
-  
-  // 6. Success
-  revalidatePath(HOMEPAGE, 'layout')
-  return redirect(HOMEPAGE)
+
+  const { data: { user }, error } = await supabase.auth.verifyOtp({
+    email,
+    token,
+    type: 'signup',
+  });
+
+  if (error) {
+    return redirect(`${SIGNUP_PAGE}?step=2&email=${encodeURIComponent(email)}&error=${encodeURIComponent(error.message)}`);
+  }
+
+  if (user) {
+    const normalizedDisplayName = displayName.toLowerCase();
+    const preferredDisplayName = displayName;
+
+    // Update user metadata
+    const { error: metadataError } = await supabaseAdmin.auth.admin.updateUserById(
+        user.id,
+        { user_metadata: { preferred_display_name: preferredDisplayName } }
+    );
+    if (metadataError) {
+        console.error("Profile metadata update error after OTP verification:", metadataError);
+    }
+
+    // Create user profile
+    const { error: profileError } = await supabase
+      .from('user_profiles')
+      .upsert({ 
+        user_id: user.id, 
+        display_name: normalizedDisplayName,
+        preferred_name: preferredDisplayName,
+      });
+    
+    if (profileError) {
+        console.error("Profile creation error after OTP verification:", profileError);
+    }
+  }
+
+  revalidatePath(HOMEPAGE, 'layout');
+  redirect(HOMEPAGE);
 }
 
 // --- User Logout ---

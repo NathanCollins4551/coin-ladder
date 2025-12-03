@@ -1,56 +1,65 @@
 // src/app/(public)/account/signup/page.tsx
 'use client'; 
 
-import { useSearchParams } from 'next/navigation';
-import { signup } from '../login/actions'; 
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { signup, verifyOtp } from '../login/actions'; 
 import Link from 'next/link';
-import { useState, useEffect, useTransition } from 'react';
-// Import the new Server Action you will create
+import { useState, useEffect } from 'react';
 import { checkDisplayNameAvailability } from '../login/actions'; 
 
-// Debounce utility to limit the rate of API calls
-const debounce = (func: Function, delay: number) => {
-  let timeoutId: NodeJS.Timeout;
-  return (...args: any) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), delay);
-  };
-};
-
 export default function SignUpPage() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
   const message = searchParams.get('message');
+  const step = searchParams.get('step');
+  const email = searchParams.get('email');
 
   // State for the display name and its validation status
   const [displayName, setDisplayName] = useState('');
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const [isChecking, startTransition] = useTransition();
+  const [isChecking, setIsChecking] = useState(false);
+  const [signUpError, setSignUpError] = useState<string | null>(null);
+  const [isSigningUp, setIsSigningUp] = useState(false);
+  const [token, setToken] = useState('');
 
-  // Debounced function to call the server action
-  // The 'useCallback' hook is not strictly necessary here, but good practice for debounced functions.
-  const checkAvailability = useEffect(() => {
+  useEffect(() => {
     if (displayName.length < 3) {
       setIsAvailable(null);
       return;
     }
 
-    const debouncedCheck = debounce(async (name: string) => {
-      startTransition(async () => {
+    setIsChecking(true);
+    const handler = setTimeout(async () => {
         try {
-          // This calls your new server action
-          const available = await checkDisplayNameAvailability(name);
+          const available = await checkDisplayNameAvailability(displayName);
           setIsAvailable(available);
         } catch (e) {
-          // Handle potential network or server errors, treat as unavailable or error state
           console.error("Error checking display name:", e);
           setIsAvailable(false); 
+        } finally {
+            setIsChecking(false);
         }
-      });
-    }, 500); // 500ms delay
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [displayName]);
 
-    debouncedCheck(displayName);
-  }, [displayName]); // Re-run effect when displayName changes
+  const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSigningUp(true);
+    setSignUpError(null);
+    const formData = new FormData(event.currentTarget);
+    const result = await signup(formData);
+    if (result.success) {
+        const email = formData.get('email') as string;
+        const displayName = formData.get('display_name') as string;
+        router.push(`${pathname}?step=2&email=${encodeURIComponent(email)}&displayName=${encodeURIComponent(displayName)}`);
+    } else {
+        setSignUpError(result.error || 'An unknown error occurred.');
+    }
+    setIsSigningUp(false);
+  };
 
   // Helper function to render the status message
   const renderAvailabilityStatus = () => {
@@ -91,6 +100,56 @@ export default function SignUpPage() {
     return null;
   };
 
+  if (step === '2') {
+    const displayName = searchParams.get('displayName');
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+            <div className="w-full max-w-md p-8 space-y-6 bg-slate-900 rounded-xl shadow-2xl border border-slate-800">
+                <h2 className="text-3xl font-bold text-center text-white">
+                Check your email
+                </h2>
+                <p className="text-center text-slate-400">
+                    We've sent a 6-digit verification code to {email}.
+                </p>
+                
+                {error && (
+                <div className="p-3 text-sm text-red-300 bg-red-900 rounded-lg border border-red-700">
+                    Verification failed: {decodeURIComponent(error)}
+                </div>
+                )}
+
+                <form className="space-y-4" action={verifyOtp}>
+                    <input type="hidden" name="email" value={email || ''} />
+                    <input type="hidden" name="displayName" value={displayName || ''} />
+                    <div>
+                        <label htmlFor="token" className="block text-sm font-medium text-slate-300">
+                        Verification Code
+                        </label>
+                        <input
+                        id="token"
+                        name="token"
+                        type="text"
+                        required
+                        placeholder="123456"
+                        value={token}
+                        onChange={(e) => setToken(e.target.value)}
+                        autoComplete="off"
+                        className="mt-1 block w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm text-white"
+                        />
+                    </div>
+                    <div className="flex justify-center">
+                        <button
+                        type="submit"
+                        className="w-full py-2 px-4 rounded-lg font-medium transition bg-sky-600 text-white hover:bg-sky-700"
+                        >
+                        Verify
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    )
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -99,31 +158,26 @@ export default function SignUpPage() {
           Create a Coin Ladder Account
         </h2>
         
-        {/* Display Error Message */}
-        {error && (
+        {(error || signUpError) && (
           <div className="p-3 text-sm text-red-300 bg-red-900 rounded-lg border border-red-700">
-            Sign up failed: {decodeURIComponent(error)}
+            Sign up failed: {error ? decodeURIComponent(error) : signUpError}
           </div>
         )}
 
-        {/* Display Success Message */}
         {message && (
           <div className="p-3 text-sm text-green-300 bg-green-900 rounded-lg border border-green-700">
             {decodeURIComponent(message)}
           </div>
         )}
 
-        {/* Form uses the 'signup' Server Action */}
-        <form className="space-y-4" action={signup}> 
-
-          {/* Display Name Input (NEW) */}
+        <form className="space-y-4" onSubmit={handleSignUp}> 
           <div>
             <label htmlFor="display_name" className="block text-sm font-medium text-slate-300">
               Unique Display Name
             </label>
             <input
               id="display_name"
-              name="display_name" // **Crucial: Must match the name used in the 'signup' action**
+              name="display_name"
               type="text"
               required
               minLength={3}
@@ -135,7 +189,6 @@ export default function SignUpPage() {
             {renderAvailabilityStatus()}
           </div>
           
-          {/* Email Input */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-300">
               Email address
@@ -150,7 +203,6 @@ export default function SignUpPage() {
             />
           </div>
 
-          {/* Password Input */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-slate-300">
               Password
@@ -168,20 +220,18 @@ export default function SignUpPage() {
           <div className="flex justify-center">
             <button 
               type="submit" 
-              // Disable button if checking or if name is invalid/unavailable
-              disabled={isChecking || isAvailable === false || displayName.length < 3}
+              disabled={isChecking || isAvailable === false || displayName.length < 3 || isSigningUp}
               className={`w-full py-2 px-4 rounded-lg font-medium transition ${
-                isChecking || isAvailable === false || displayName.length < 3 
+                isChecking || isAvailable === false || displayName.length < 3 || isSigningUp
                   ? 'bg-slate-600 text-slate-400 cursor-not-allowed' 
                   : 'bg-sky-600 text-white hover:bg-sky-700'
               }`}
             >
-              Sign Up
+              {isSigningUp ? 'Signing up...' : 'Sign Up'}
             </button>
           </div>
         </form>
         
-        {/* Log In Link */}
         <div className="text-center text-sm">
           <p className="text-slate-400">
             Already have an account?{' '}
