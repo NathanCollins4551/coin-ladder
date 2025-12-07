@@ -21,6 +21,7 @@ export default function SignUpForm() {
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [signUpError, setSignUpError] = useState<string | null>(null);
+  const [emailExistsError, setEmailExistsError] = useState(false);
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [token, setToken] = useState('');
 
@@ -49,14 +50,18 @@ export default function SignUpForm() {
     event.preventDefault();
     setIsSigningUp(true);
     setSignUpError(null);
+    setEmailExistsError(false);
     const formData = new FormData(event.currentTarget);
     const result = await signup(formData);
     if (result.success) {
         const email = formData.get('email') as string;
-        const displayName = formData.get('display_name') as string;
-        router.push(`${pathname}?step=2&email=${encodeURIComponent(email)}&displayName=${encodeURIComponent(displayName)}`);
+        router.push(`${pathname}?step=2&email=${encodeURIComponent(email)}`);
     } else {
-        setSignUpError(result.error || 'An unknown error occurred.');
+        if (result.error === 'An account with this email already exists.') {
+            setEmailExistsError(true);
+        } else {
+            setSignUpError(result.error || 'An unknown error occurred.');
+        }
     }
     setIsSigningUp(false);
   };
@@ -101,7 +106,6 @@ export default function SignUpForm() {
   };
 
   if (step === '2') {
-    const displayName = searchParams.get('displayName');
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="w-full max-w-md p-8 space-y-6 bg-slate-900 rounded-xl shadow-2xl border border-slate-800">
@@ -117,10 +121,14 @@ export default function SignUpForm() {
                     Verification failed: {decodeURIComponent(error)}
                 </div>
                 )}
+                {message && (
+                  <div className="p-3 text-sm text-green-300 bg-green-900 rounded-lg border border-green-700">
+                    {decodeURIComponent(message)}
+                  </div>
+                )}
 
                 <form className="space-y-4" action={verifyOtp}>
                     <input type="hidden" name="email" value={email || ''} />
-                    <input type="hidden" name="displayName" value={displayName || ''} />
                     <div>
                         <label htmlFor="token" className="block text-sm font-medium text-slate-300">
                         Verification Code
@@ -158,7 +166,17 @@ export default function SignUpForm() {
           Create a Coin Ladder Account
         </h2>
         
-        {(error || signUpError) && (
+        {emailExistsError && (
+            <div className="p-3 text-sm text-red-300 bg-red-900 rounded-lg border border-red-700">
+                An account with this email already exists. Please{' '}
+                <Link href="/account/login" className="font-bold underline hover:text-red-200">
+                    Log In
+                </Link>
+                .
+            </div>
+        )}
+
+        {!emailExistsError && (error || signUpError) && (
           <div className="p-3 text-sm text-red-300 bg-red-900 rounded-lg border border-red-700">
             Sign up failed: {error ? decodeURIComponent(error) : signUpError}
           </div>

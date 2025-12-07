@@ -49,6 +49,8 @@ export async function checkDisplayNameAvailability(displayName: string): Promise
 // --- User Login ---
 /**
  * Handles user sign-in.
+ * If the user's email is not confirmed, it resends the verification code
+ * and redirects them to the OTP verification page.
  */
 export async function login(formData: FormData) {
   const supabase = await createClient()
@@ -62,7 +64,15 @@ export async function login(formData: FormData) {
 
   if (error) {
     if (error.message === 'Email not confirmed') {
-      return redirect(LOGIN_PAGE + '?error=' + encodeURIComponent('Email not confirmed. Please check your inbox for the confirmation link.'));
+      // Resend the verification email
+      await supabase.auth.resend({
+        type: 'signup',
+        email: data.email,
+      });
+      
+      const message = "Your email is not confirmed. We've sent a new verification code to your inbox.";
+      // Redirect to the OTP page
+      return redirect(`${SIGNUP_PAGE}?step=2&email=${encodeURIComponent(data.email)}&message=${encodeURIComponent(message)}`);
     }
     return redirect(LOGIN_PAGE + '?error=' + encodeURIComponent(error.message));
   }
@@ -74,21 +84,40 @@ export async function login(formData: FormData) {
 // --- User Signup ---
 /**
  * UPDATED SIGNUP ACTION: 
- * 1. Creates Auth user.
- * 2. Inserts two names (normalized for unique check, preferred for display).
- * 3. Cleans up Auth user if the profile insert fails.
- * 4. Updates Auth metadata for session access.
+ * 1. Checks if email already exists via RPC.
+ * 2. Creates Auth user and stores display_name in metadata.
+ * 3. Redirects to the OTP verification step.
  */
 export async function signup(formData: FormData): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient() 
+  const supabase = createClient();
+  const supabaseAdmin = createAdminClient();
 
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const displayName = formData.get('display_name') as string;
 
+  // First, check if a user with this email already exists via RPC
+  const { data: userExists, error: rpcError } = await supabaseAdmin
+    .rpc('check_user_exists', { user_email: email });
+
+  if (rpcError) {
+    console.error('Error checking if user exists:', rpcError);
+    return { success: false, error: 'An unexpected error occurred. Please try again.' };
+  }
+
+  if (userExists) {
+    return { success: false, error: 'An account with this email already exists.' };
+  }
+
+  // If email is not taken, proceed with signup
   const { error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+        data: {
+            'preferred_display_name': displayName,
+        }
+    }
   });
 
   if (error) {
@@ -99,16 +128,19 @@ export async function signup(formData: FormData): Promise<{ success: boolean; er
 }
 
 // --- OTP Verification ---
+/**
+ * Verifies the OTP and creates the user profile upon success.
+ * Retrieves the display name from the user's metadata.
+ */
 export async function verifyOtp(formData: FormData) {
   const supabase = await createClient();
   const supabaseAdmin = createAdminClient();
 
   const email = formData.get('email') as string;
   const token = formData.get('token') as string;
-  const displayName = formData.get('displayName') as string;
 
-  if (!email || !token || !displayName) {
-    return redirect(`${SIGNUP_PAGE}?step=2&email=${encodeURIComponent(email)}&error=Email, token, and display name are required.`);
+  if (!email || !token) {
+    return redirect(`${SIGNUP_PAGE}?step=2&email=${encodeURIComponent(email)}&error=Email and token are required.`);
   }
 
   const { data: { user }, error } = await supabase.auth.verifyOtp({
@@ -122,20 +154,18 @@ export async function verifyOtp(formData: FormData) {
   }
 
   if (user) {
-    const normalizedDisplayName = displayName.toLowerCase();
-    const preferredDisplayName = displayName;
+    const preferredDisplayName = user.user_metadata.preferred_display_name;
 
-    // Update user metadata
-    const { error: metadataError } = await supabaseAdmin.auth.admin.updateUserById(
-        user.id,
-        { user_metadata: { preferred_display_name: preferredDisplayName } }
-    );
-    if (metadataError) {
-        console.error("Profile metadata update error after OTP verification:", metadataError);
+    if (!preferredDisplayName) {
+        console.error("Critical: 'preferred_display_name' not found in user metadata after OTP verification for user:", user.id);
+        const errorMessage = "Could not find your display name. Please try signing up again.";
+        return redirect(`${SIGNUP_PAGE}?error=${encodeURIComponent(errorMessage)}`);
     }
 
+    const normalizedDisplayName = preferredDisplayName.toLowerCase();
+
     // Create user profile
-    const { error: profileError } = await supabase
+    const { error: profileError } = await supabaseAdmin
       .from('user_profiles')
       .upsert({ 
         user_id: user.id, 
@@ -143,8 +173,18 @@ export async function verifyOtp(formData: FormData) {
         preferred_name: preferredDisplayName,
       });
     
+    // If profile creation fails, redirect with error and clean up the orphaned auth user
     if (profileError) {
-        console.error("Profile creation error after OTP verification:", profileError);
+        console.error("Critical: Profile creation failed after OTP verification:", profileError);
+
+        // Cleanup: Attempt to delete the newly created user to prevent orphaned auth accounts
+        const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
+        if (deleteError) {
+            console.error("Critical: Failed to clean up orphaned user:", deleteError);
+        }
+
+        const errorMessage = "Could not create your user profile. Please try signing up again.";
+        return redirect(`${SIGNUP_PAGE}?error=${encodeURIComponent(errorMessage)}`);
     }
   }
 
