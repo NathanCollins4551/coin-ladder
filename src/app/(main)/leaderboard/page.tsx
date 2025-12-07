@@ -92,7 +92,7 @@ async function fetchUserRank(userId: string): Promise<{ rank: number; balance: n
 
 // Main Leaderboard Server Component
 export default async function LeaderboardPage() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     const [leaderboardData, userRank] = await Promise.all([

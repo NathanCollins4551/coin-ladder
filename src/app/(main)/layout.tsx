@@ -9,7 +9,7 @@ import { ProfileBarServer } from '@/components/ProfileBarServer'
 const LANDING_PAGE = '/landing' 
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
-    const supabase = createClient()
+    const supabase = await createClient()
 
     // CRITICAL: Use getUser() for protection, which revalidates the token.
     const { data, error } = await supabase.auth.getUser()

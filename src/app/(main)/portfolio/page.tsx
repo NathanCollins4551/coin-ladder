@@ -9,8 +9,7 @@ import SellButton from '@/components/SellButton';
 
 
 export default async function PortfolioPage() {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+      const supabase = await createClient();  const { data: { user } } = await supabase.auth.getUser();
   const portfolio = await calculatePortfolioHoldings(supabase, user?.id);
 
   if (portfolio.length === 0) {

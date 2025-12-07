@@ -89,7 +89,7 @@ export async function login(formData: FormData) {
  * 3. Redirects to the OTP verification step.
  */
 export async function signup(formData: FormData): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const supabaseAdmin = createAdminClient();
 
   const email = formData.get('email') as string;

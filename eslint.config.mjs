@@ -1,10 +1,5 @@
-import { defineConfig } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import next from 'eslint-config-next';
 
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-]);
-
-export default eslintConfig;
+export default [
+  next,
+];
